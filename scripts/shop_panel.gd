@@ -12,8 +12,8 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(640, 0)
 	offset_left = -320
 	offset_right = 320
-	offset_top = -300
-	offset_bottom = 300
+	offset_top = -262
+	offset_bottom = 338
 	grow_horizontal = Control.GROW_DIRECTION_BOTH
 	grow_vertical = Control.GROW_DIRECTION_BOTH
 	_body = VBoxContainer.new()

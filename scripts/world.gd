@@ -424,6 +424,7 @@ func _set_mode(m: Mode) -> void:
 	if player:
 		player.controls_enabled = m == Mode.FOOT
 	hud.visible = m not in [Mode.TITLE, Mode.ENDING]
+	hud.set_menu_overlay(m in [Mode.DOCKED, Mode.MAP, Mode.PAUSED], m == Mode.PAUSED)
 	get_tree().paused = m in [Mode.PAUSED, Mode.MAP, Mode.ENDING]
 
 

@@ -108,7 +108,7 @@ func _update_bolts(delta: float) -> void:
 		var life: float = b.get_meta("life") - delta
 		b.set_meta("life", life)
 		b.global_position += (b.get_meta("vel") as Vector3) * delta
-		var hit := ship != null and ship.piloted and not ship.landed and not ship.docked \
+		var hit := ship != null and ship.piloted and not ship.docked \
 			and b.global_position.distance_to(ship.global_position) < 3.2
 		if hit:
 			ship.take_damage(BOLT_DAMAGE)

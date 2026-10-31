@@ -183,10 +183,20 @@ func _run() -> void:
 	# Galaxy map and warp.
 	Game.upgrades["warp"] = 1
 	Game.fuel = Game.max_fuel()
+	Input.action_press("forward")
+	Input.action_press("fire")
+	await seconds(0.3)
 	world.open_map()
 	var ship_pos := ship.global_position
+	await frames(2)
+	var engine_pos: float = Sfx._engine.get_playback_position()
+	var laser_pos: float = Sfx._laser.get_playback_position()
 	await seconds(0.5)
 	check(get_tree().paused and ship.global_position == ship_pos, "galaxy map pauses the simulation")
+	check(Sfx._engine.get_playback_position() == engine_pos and Sfx._laser.get_playback_position() == laser_pos,
+		"engine and laser loops are silent under the map")
+	Input.action_release("forward")
+	Input.action_release("fire")
 	var target := Vector2i.ZERO
 	for cell in Galaxy.systems_near(Vector2i.ZERO, 3):
 		if world.warp_error(cell) == "":

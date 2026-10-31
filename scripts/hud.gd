@@ -39,6 +39,10 @@ var _progress: ProgressBar
 var _flash: ColorRect
 var _help_timer := 0.0
 var _message_cooldown := 0.0
+var _overlay := false
+var _help_wanted := false
+var _help_allowed := true
+var _hideable: Array[Control] = []
 
 
 func _ready() -> void:
@@ -91,11 +95,11 @@ func _ready() -> void:
 	Game.notified.connect(_on_notified)
 
 	_help = PanelContainer.new()
-	_place(_help, Control.PRESET_CENTER_RIGHT, Vector2(-490, -200))
+	_place(_help, Control.PRESET_CENTER_RIGHT, Vector2(-455, -200))
 	var rt := RichTextLabel.new()
 	rt.bbcode_enabled = true
 	rt.fit_content = true
-	rt.custom_minimum_size = Vector2(440, 0)
+	rt.custom_minimum_size = Vector2(410, 0)
 	rt.text = HELP_TEXT
 	rt.add_theme_font_size_override("normal_font_size", 14)
 	rt.add_theme_font_size_override("bold_font_size", 15)
@@ -108,6 +112,7 @@ func _ready() -> void:
 	_flash.color = Color(0.8, 0.95, 1.0, 0.0)
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_flash)
+	_hideable = [top_left, bottom_left, _nav, _prompt, _progress]
 
 
 func _place(c: Control, preset: Control.LayoutPreset, pos: Vector2, sz := Vector2.ZERO) -> void:
@@ -119,13 +124,30 @@ func _place(c: Control, preset: Control.LayoutPreset, pos: Vector2, sz := Vector
 
 
 func show_help(auto_hide: bool) -> void:
-	_help.visible = true
+	_help_wanted = true
 	_help_timer = 14.0 if auto_hide else 0.0
+	_sync_help()
 
 
 func toggle_help() -> void:
-	_help.visible = not _help.visible
+	_help_wanted = not _help_wanted
 	_help_timer = 0.0
+	_sync_help()
+
+
+## While a menu covers the screen only notifications (and, if allowed, the
+## help panel) stay visible, so nothing bleeds through the menu panels.
+func set_menu_overlay(on: bool, allow_help: bool) -> void:
+	_overlay = on
+	_help_allowed = not on or allow_help
+	for c in _hideable:
+		c.visible = not on
+	_sync_help()
+	queue_redraw()
+
+
+func _sync_help() -> void:
+	_help.visible = _help_wanted and _help_allowed
 
 
 func warp_flash() -> void:
@@ -162,8 +184,9 @@ func _process(delta: float) -> void:
 	if _help_timer > 0.0:
 		_help_timer -= delta
 		if _help_timer <= 0.0:
-			_help.visible = false
-	if world == null or world.ship == null:
+			_help_wanted = false
+			_sync_help()
+	if _overlay or world == null or world.ship == null:
 		return
 	_info.text = "%d cr    Fragments %d/%d" % [Game.credits, Game.fragments.size(), Game.FRAGMENTS_NEEDED]
 	var parts := []
@@ -221,7 +244,7 @@ func _nav_text() -> String:
 
 
 func _draw() -> void:
-	if world == null or world.ship == null:
+	if _overlay or world == null or world.ship == null:
 		return
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:

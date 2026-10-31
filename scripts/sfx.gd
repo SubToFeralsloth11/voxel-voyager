@@ -37,10 +37,12 @@ func _ready() -> void:
 	_engine = AudioStreamPlayer.new()
 	_engine.stream = _loop_noise(1.0, 0.18)
 	_engine.volume_db = -80.0
+	_engine.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(_engine)
 	_laser = AudioStreamPlayer.new()
 	_laser.stream = _loop_tone(0.5, 330.0, 0.2)
 	_laser.volume_db = -14.0
+	_laser.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(_laser)
 
 
