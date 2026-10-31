@@ -286,7 +286,8 @@ func take_damage(amount: float) -> void:
 func _update_effects(delta: float, power: float) -> void:
 	if not firing:
 		_laser.visible = false
-		Sfx.loop_laser(false)
+		if piloted:
+			Sfx.loop_laser(false)
 	for f in _flames:
 		var target := 0.08 + power * 1.4
 		f.scale.z = lerpf(f.scale.z, target, 1.0 - exp(-10.0 * delta))

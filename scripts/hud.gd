@@ -12,7 +12,8 @@ F - dock at outpost / step outside when landed
 
 [b]ON FOOT[/b]
 WASD - walk    Shift - sprint    Space - jump / jetpack
-Left click (hold) - mine    Right click - build (uses stone)
+Left click (hold) - mine (stone & ore fill the hold)
+Right click - build a block (uses 1 stone)
 F - board ship / activate beacon
 
 [b]GOAL[/b]  Mine and sell ore, upgrade your ship, buy a warp

@@ -211,25 +211,19 @@ func _process(delta: float) -> void:
 			_update_scan(delta)
 
 
+## Map, pause and ending menus handle their own keys while the tree is paused.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
-		if mode == Mode.MAP:
-			close_map()
-		elif mode == Mode.DOCKED:
+		if mode == Mode.DOCKED:
 			undock()
-		elif mode == Mode.PAUSED:
-			resume()
 		elif mode in [Mode.SHIP, Mode.FOOT]:
 			pause()
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("help") and mode in [Mode.SHIP, Mode.FOOT]:
 		hud.toggle_help()
-	if event.is_action_pressed("galaxy_map"):
-		if mode == Mode.SHIP:
-			open_map()
-		elif mode == Mode.MAP:
-			close_map()
+	if event.is_action_pressed("galaxy_map") and mode == Mode.SHIP:
+		open_map()
 	if event.is_action_pressed("interact"):
 		interact()
 	if event is InputEventMouseButton and event.pressed and mode in [Mode.SHIP, Mode.FOOT] \
@@ -429,8 +423,8 @@ func _set_mode(m: Mode) -> void:
 		ship.controls_enabled = m == Mode.SHIP
 	if player:
 		player.controls_enabled = m == Mode.FOOT
-	hud.visible = m in [Mode.SHIP, Mode.FOOT, Mode.WARP]
-	get_tree().paused = m == Mode.PAUSED
+	hud.visible = m not in [Mode.TITLE, Mode.ENDING]
+	get_tree().paused = m in [Mode.PAUSED, Mode.MAP, Mode.ENDING]
 
 
 func show_title() -> void:
@@ -449,7 +443,7 @@ func start_new_game() -> void:
 
 func continue_game() -> void:
 	if not Game.load_game():
-		Game.notify("Save file could not be loaded.", Color(1, 0.4, 0.4))
+		menus.show_title_error("Save file could not be loaded.")
 		return
 	_begin(Game.system_cell)
 
@@ -614,12 +608,16 @@ func _on_ship_destroyed() -> void:
 	Game.fuel = maxf(Game.fuel, Game.max_fuel() * 0.5)
 	Game.changed.emit()
 	hud.warp_flash()
+	if mode == Mode.FOOT:
+		enter_ship()
 	_reset_ship_near_station()
 	Game.notify("Hull breached! Your ship was towed to the outpost. Cargo lost.", Color(1, 0.4, 0.35))
 	_respawning = false
 
 
 func _on_player_died() -> void:
+	if mode != Mode.FOOT:
+		return
 	var planet := player.planet
 	enter_ship()
 	if planet:

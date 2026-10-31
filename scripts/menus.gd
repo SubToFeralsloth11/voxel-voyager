@@ -9,6 +9,7 @@ var _ending: Control
 var _continue: Button
 var _ending_stats: Label
 var _sens: HSlider
+var _title_error: Label
 
 
 func _ready() -> void:
@@ -58,6 +59,9 @@ func _build_title() -> Control:
 	_button(box, "New Game", world.start_new_game)
 	_continue = _button(box, "Continue", world.continue_game)
 	_button(box, "Quit", func() -> void: get_tree().quit())
+	_title_error = UiTheme.label("", 15, Color(1.0, 0.5, 0.45))
+	_title_error.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(_title_error)
 	return box.get_parent()
 
 
@@ -110,7 +114,12 @@ func hide_all() -> void:
 func show_title() -> void:
 	hide_all()
 	_continue.disabled = not Game.has_save()
+	_title_error.text = ""
 	_title.visible = true
+
+
+func show_title_error(text: String) -> void:
+	_title_error.text = text
 
 
 func show_pause() -> void:

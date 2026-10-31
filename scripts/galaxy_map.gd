@@ -15,6 +15,7 @@ var _error: Label
 
 func _ready() -> void:
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var panel := PanelContainer.new()
@@ -141,3 +142,10 @@ func _draw() -> void:
 func _process(_delta: float) -> void:
 	if visible:
 		queue_redraw()
+
+
+## The tree is paused while the map is open, so the map closes itself.
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and (event.is_action_pressed("pause") or event.is_action_pressed("galaxy_map")):
+		get_viewport().set_input_as_handled()
+		world.close_map()

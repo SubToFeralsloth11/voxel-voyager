@@ -118,6 +118,15 @@ func _run() -> void:
 	player._pitch = -1.2
 	Input.action_press("fire")
 	await seconds(1.5)
+	var restarts := 0
+	var last_pos: float = Sfx._laser.get_playback_position()
+	for i in 20:
+		await frames(1)
+		var pos: float = Sfx._laser.get_playback_position()
+		if pos < last_pos:
+			restarts += 1
+		last_pos = pos
+	check(restarts <= 1, "mining laser sound loops instead of restarting (%d restarts in 20 frames)" % restarts)
 	await shot("07_mining")
 	await seconds(1.5)
 	Input.action_release("fire")
@@ -175,6 +184,9 @@ func _run() -> void:
 	Game.upgrades["warp"] = 1
 	Game.fuel = Game.max_fuel()
 	world.open_map()
+	var ship_pos := ship.global_position
+	await seconds(0.5)
+	check(get_tree().paused and ship.global_position == ship_pos, "galaxy map pauses the simulation")
 	var target := Vector2i.ZERO
 	for cell in Galaxy.systems_near(Vector2i.ZERO, 3):
 		if world.warp_error(cell) == "":
