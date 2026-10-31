@@ -73,18 +73,19 @@ func _setup_environment() -> void:
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.32, 0.36, 0.5)
-	env.ambient_light_energy = 0.55
+	env.ambient_light_energy = 0.35
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.glow_enabled = true
-	env.glow_intensity = 0.9
-	env.glow_bloom = 0.08
+	env.glow_intensity = 0.7
+	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
+	env.glow_hdr_threshold = 1.1
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 	_sun_light = DirectionalLight3D.new()
 	_sun_light.shadow_enabled = true
 	_sun_light.directional_shadow_max_distance = 260.0
-	_sun_light.light_energy = 1.3
+	_sun_light.light_energy = 1.1
 	add_child(_sun_light)
 
 
@@ -491,7 +492,7 @@ func exit_ship() -> void:
 	player.died.connect(_on_player_died)
 	add_child(player)
 	var up := (ship.global_position - planet.global_position).normalized()
-	player.global_position = ship.global_position + ship.global_basis.x * 3.6 + up * 1.2
+	player.global_position = _free_spot(ship.global_position + ship.global_basis.x * 3.6 + up * 1.2, up)
 	player.global_basis = ship.global_basis
 	player.planet = planet
 	player.cam.current = true
@@ -509,6 +510,23 @@ func enter_ship() -> void:
 	ship.snap_camera()
 	Sfx.play("ui")
 	_set_mode(Mode.SHIP)
+
+
+## First position at or above `pos` (stepping along `up`) where the
+## astronaut's capsule overlaps nothing, so it never spawns inside terrain.
+func _free_spot(pos: Vector3, up: Vector3) -> Vector3:
+	var capsule := CapsuleShape3D.new()
+	capsule.radius = 0.35
+	capsule.height = 1.7
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = capsule
+	var space := get_world_3d().direct_space_state
+	var basis := VoxelPlanet.basis_for_up(up)
+	for i in 16:
+		query.transform = Transform3D(basis, pos + up * i)
+		if space.intersect_shape(query, 1).is_empty():
+			return pos + up * i
+	return pos + up * 16.0
 
 
 func _remove_player() -> void:

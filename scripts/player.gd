@@ -59,7 +59,8 @@ func _ready() -> void:
 
 func _build_tool() -> void:
 	_tool = Node3D.new()
-	_tool.position = Vector3(0.32, -0.28, -0.55)
+	_tool.position = Vector3(0.2, -0.16, -0.5)
+	_tool.scale = Vector3.ONE * 0.5
 	cam.add_child(_tool)
 	for part: Array in [[Vector3(0.12, 0.12, 0.42), Vector3.ZERO, Color(0.85, 0.86, 0.9), 0.0],
 			[Vector3(0.08, 0.16, 0.1), Vector3(0, -0.12, 0.1), Color(0.25, 0.25, 0.3), 0.0],

@@ -41,7 +41,7 @@ var _message_cooldown := 0.0
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var top_left := VBoxContainer.new()
@@ -103,7 +103,7 @@ func _ready() -> void:
 	add_child(_help)
 
 	_flash = ColorRect.new()
-	_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_flash.color = Color(0.8, 0.95, 1.0, 0.0)
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_flash)
@@ -233,7 +233,7 @@ func _draw() -> void:
 	draw_line(center + Vector2(0, 3), center + Vector2(0, 8), cross_col, 2.0)
 	var on_foot := world.mode == World.Mode.FOOT
 	for p in world.planets:
-		if not on_foot:
+		if not on_foot and cam.global_position.distance_to(p.global_position) > p.radius * 2.5:
 			var col: Color = p.type_info["top"].lerp(Color.WHITE, 0.4)
 			var tag := p.planet_name + (" [scanned]" if Game.scanned.has(p.key) else "")
 			_marker(cam, p.global_position, tag, col, p.radius)

@@ -427,8 +427,8 @@ func _make_proxy() -> void:
 	if has_atmosphere():
 		var halo := MeshInstance3D.new()
 		var hs := SphereMesh.new()
-		hs.radius = radius * 1.35
-		hs.height = radius * 2.7
+		hs.radius = radius * 1.22
+		hs.height = radius * 2.44
 		hs.radial_segments = 32
 		hs.rings = 16
 		var hm := ShaderMaterial.new()
@@ -454,7 +454,7 @@ func _make_proxy() -> void:
 		_beam.mesh = cyl
 		_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var top := beacon_local + beacon_up * (BEACON_HEIGHT * (2 if is_core else 1) + 300.0)
-		_beam.transform = Transform3D(_basis_for_up(beacon_up), top)
+		_beam.transform = Transform3D(basis_for_up(beacon_up), top)
 		_beam.visible = Game.scanned.has(key)
 		add_child(_beam)
 		var light := OmniLight3D.new()
@@ -465,6 +465,6 @@ func _make_proxy() -> void:
 		add_child(light)
 
 
-static func _basis_for_up(up: Vector3) -> Basis:
+static func basis_for_up(up: Vector3) -> Basis:
 	var x := up.cross(Vector3.FORWARD if absf(up.z) < 0.9 else Vector3.RIGHT).normalized()
 	return Basis(x, up, x.cross(up)).orthonormalized()

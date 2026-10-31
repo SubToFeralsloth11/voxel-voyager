@@ -288,7 +288,7 @@ func _update_effects(delta: float, power: float) -> void:
 		_laser.visible = false
 		Sfx.loop_laser(false)
 	for f in _flames:
-		var target := 0.25 + power * 1.4
+		var target := 0.08 + power * 1.4
 		f.scale.z = lerpf(f.scale.z, target, 1.0 - exp(-10.0 * delta))
 		f.position.z = 2.7 + f.scale.z * 0.5
 	_engine_light.light_energy = 0.4 + power * 2.0

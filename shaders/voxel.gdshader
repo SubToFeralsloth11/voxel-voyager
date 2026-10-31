@@ -1,8 +1,11 @@
 shader_type spatial;
-// Vertex-coloured voxels. Colour alpha encodes glow: 1 = matte, 0 = full emission.
+// Vertex-coloured voxels. Vertex colours are authored in sRGB; alpha encodes
+// glow: 1 = matte, 0 = full emission.
 
 void fragment() {
-	ALBEDO = COLOR.rgb;
-	ROUGHNESS = 0.9;
-	EMISSION = COLOR.rgb * (1.0 - COLOR.a) * 2.5;
+	vec3 col = pow(COLOR.rgb, vec3(2.2));
+	ALBEDO = col;
+	ROUGHNESS = 0.95;
+	SPECULAR = 0.15;
+	EMISSION = col * (1.0 - COLOR.a) * 3.0;
 }

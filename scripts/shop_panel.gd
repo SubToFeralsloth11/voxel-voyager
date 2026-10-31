@@ -69,7 +69,7 @@ func _refresh() -> void:
 		var info: Dictionary = Game.UPGRADES[id]
 		var lvl := Game.level(id)
 		var max_lvl: int = info["max"]
-		var name_l := UiTheme.label("%s  %s" % [info["name"], "■".repeat(lvl) + "□".repeat(max_lvl - lvl)], 16)
+		var name_l := UiTheme.label("%s  Lv %d/%d" % [info["name"], lvl, max_lvl], 16)
 		name_l.custom_minimum_size = Vector2(230, 0)
 		grid.add_child(name_l)
 		var desc := UiTheme.label(info["desc"], 13, Color(0.7, 0.78, 0.85))
